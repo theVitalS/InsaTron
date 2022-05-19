@@ -27,7 +27,7 @@ def multiscanner(bot, ids, to_scan_user_info=True, to_scan_posts=False, n_posts=
 
             n += 1
 
-        if get_db_value("isPrivate", "user", user_id) != 1 and len(get_followings(user_id)) == 0:
+        if True:  # get_db_value("isPrivate", "user", user_id) != 1 and len(get_followings(user_id)) == 0:
             if to_scan_posts:
                 scan_posts(bot, profile, n_posts, to_scan_post_info, to_scan_likes, to_scan_likers, to_can_comments,
                            to_scan_tags)
@@ -45,13 +45,36 @@ def multiscanner(bot, ids, to_scan_user_info=True, to_scan_posts=False, n_posts=
             pause(5, 15)
         print("{} -- user {}({}) successfully scanned".format(datetime.now(), get_db_user_login_from_id(user_id),
                                                               user_id))
-        if n == 15:
+        if n > 8 + random.random()*5:
             n = 0
-            bot.change_bot()
+            #bot.change_bot()
+            pause(20, 70)
         else:
-            pause(25, 90)
+            pause(5, 15)
 
         print("__________________________________________")
+
+
+def scan_usernames(ids, botLoader):
+    n = 0
+    n1 = 0
+    k = 0
+    for userid in ids:
+        if not if_user_info_in_table(userid):
+            pr = instaloader.Profile.from_id(botLoader.context, userid)
+            insert_user_login(userid, pr.username)
+            n += 1
+            if n > 10 + random.random() * 10:
+                k += n
+                print("{} ---- {} usernames scanned".format(datetime.now(), k))
+                pause(5, 30)
+                n = 0
+                n1 += 1
+
+            if n1 == 8:
+                pause(60, 180)
+                print("----------------------------------------------")
+                n1 = 0
 
 
 def get_top_likers(user, parameter, value_type="amount"):

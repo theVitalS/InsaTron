@@ -1,12 +1,15 @@
-import mysql.connector
+# import mysql.connector
 from datetime import datetime
-from mysql.connector import (connection)
+# from mysql.connector import (connection)
+import sqlite3
 
 
 def connect():
     # db_con = mysql.connector.connect(host='localhost', user='admin', password='admin', database='test1')
-    db_con = connection.MySQLConnection(host='localhost', user='root', password='1a12s23d3', database='instaintel')
-    return db_con
+    # db_con = connection.MySQLConnection(host='localhost', user='root', password='1a12s23d3', database='instaintel')
+
+    connection = sqlite3.connect('Info.db')
+    return connection
 
 
 db = connect()
@@ -118,28 +121,47 @@ def insert_user_id(user_id):
         db.commit()
 
 
-def insert_user_info(user_id, us_login, us_name, us_posts, us_followers, us_following, us_webLink, us_activeStory, is_private):
+def insert_user_login(user_id, us_login):
     if not if_user_info_in_table(user_id):
         # print("Inserting info for user {}".format(user_id))
-        us_name_upd = us_name.replace("'", "\\'")
-        curs.execute("UPDATE USER SET login='{}', name='{}', posts={}, followers={}, following={}, webLink='{}', "
-                     "activeStory={}, scanTime=now(), isPrivate={} WHERE userID={}".format(us_login, us_name_upd, us_posts,
-                                                                                           us_followers,
-                                                                             us_following, us_webLink, us_activeStory,
-                                                                             is_private, user_id))
+        #us_login_upd = us_login.replace("'", "''")
+        curs.execute("UPDATE USER SET login='{}' WHERE userID={}".format(us_login, user_id))
         db.commit()
 
 
-def insert_user_all(user_id, us_login, us_name, us_posts, us_followers, us_following, us_webLink, us_activeStory, is_private):
+def insert_user_info(user_id, us_login, us_name, us_posts, us_followers, us_following, us_webLink, us_activeStory):
+    if not if_user_info_in_table(user_id):
+        # print("Inserting info for user {}".format(user_id))
+        us_name_upd = us_name.replace("'", "''")
+        print("UPDATE USER SET login='{}',"
+         " name='{}',"
+         " posts={}, followers={}, following={},"
+         " webLink='{}', "
+         "activeStory='{}', scanTime='' WHERE userID={}".format(us_login, us_name_upd, us_posts,
+                                                              us_followers, us_following, us_webLink,
+                                                              us_activeStory, user_id))
+
+
+        curs.execute("UPDATE USER SET login='{}',"
+                     " name='{}',"
+                     " posts={}, followers={}, following={},"
+                     " webLink='{}', "
+                     "activeStory='{}', scanTime='' WHERE userID={}".format(us_login, us_name_upd, us_posts,
+                                                                           us_followers, us_following, us_webLink,
+                                                                          us_activeStory, user_id))
+        db.commit()
+
+
+def insert_user_all(user_id, us_login, us_name, us_posts, us_followers, us_following, us_webLink, us_activeStory):
     insert_user_id(user_id)
-    insert_user_info(user_id, us_login, us_name, us_posts, us_followers, us_following, us_webLink, us_activeStory, is_private)
+    insert_user_info(user_id, us_login, us_name, us_posts, us_followers, us_following, us_webLink, us_activeStory)
 
 
 def insert_user_from_profile(pr):
     user_id = pr.userid
     if not if_user_info_in_table(user_id):
-        insert_user_all(user_id, pr.username, pr.full_name, pr.mediacount, pr.followers, pr.followees,
-                        pr.external_url, pr.has_public_story, pr.is_private)
+        insert_user_all(user_id, pr.username, pr.full_name, pr.mediacount, pr.followers, pr.followees, '','')
+                      #  pr.external_url, pr.has_public_story)
 
 
 def insert_post_id(post_id):
@@ -152,11 +174,11 @@ def insert_post_id(post_id):
 def insert_post_basics(post_id, author):
     if not if_post_id_in_table(post_id):
         print("{} -- Inserting post id {}".format(datetime.now(), post_id))
-        curs.execute("INSERT INTO POST (postID, author, scanTime) VALUES ({},{}, now())".format(post_id, author))
+        curs.execute("INSERT INTO POST (postID, author, scanTime) VALUES ({},{}, '')".format(post_id, author))
         db.commit()
 
 
-def insert_post_info(post_id, link, post_type, text, likes, comments, date):
+def insert_post_info(post_id, link, post_type, text, likes, comments):
     if not if_post_info_in_table(post_id):
         print("Inserting info for post {}".format(post_id))
         if isinstance(text, str):
@@ -164,15 +186,15 @@ def insert_post_info(post_id, link, post_type, text, likes, comments, date):
         else:
             text_upd = text
         curs.execute("UPDATE POST SET link='{}', type={}, text='{}', likes={}, "
-                     "comments={}, scanTime=now(), date='{}' WHERE postID={}".format(link, post_type, text_upd, likes,
-                                                                                   comments, date, post_id))
+                     "comments={}, scanTime='' WHERE postID={}".format(link, post_type, text_upd, likes,
+                                                                                   comments,  post_id))
         db.commit()
 
 
-def insert_post_all(post_id, author, link, post_type, text, likes, comments, date):
+def insert_post_all(post_id, author, link, post_type, text, likes, comments): #, date):
     print("{} -- Inserting info for post {}, author {}".format(datetime.now(), post_id, author))
     insert_post_basics(post_id, author)
-    insert_post_info(post_id, link, post_type, text, likes, comments, date)
+    insert_post_info(post_id, link, post_type, text, likes, comments)
 
 
 def insert_like(user_id, post_id):
@@ -214,7 +236,7 @@ def insert_comment(comment_id, post_id, user_id, text, likes, create_time):
 
 
 def set_dummies():
-    """
+    # (user_id, us_login, us_name, us_posts, us_followers, us_following, us_webLink, us_activeStory, is_private)
     insert_user_all(1, "user1", "Karl", 3, 2, 1, "", True)
     insert_user_all(2, "user2", "Frank", 3, 2, 1, "", False)
     insert_user_all(3, "user3", "Jamey", 3, 2, 1, "", False)
@@ -246,7 +268,7 @@ def set_dummies():
     insert_like(4, 3)
     insert_like(5, 1)
     insert_like(5, 6)
-    insert_like(5, 7)"""
+    insert_like(5, 7)
 
 
 # ---------------------------------GET-------------------------------------------------
@@ -333,3 +355,13 @@ def get_most_followed(number):
     for (user_id, n_followers, ) in curs:
         result.append({"User_id": user_id, "n_followers": n_followers})
     return result
+
+
+#  -------------------------------------------Create Database-----------------------------------------------------
+
+def create_tables():
+    with open('CreateTables1.sql', 'r') as sql_file:
+        sql_script = sql_file.read()
+        curs.executescript(sql_script)
+        db.commit()
+

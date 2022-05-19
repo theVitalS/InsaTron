@@ -25,6 +25,8 @@ class User:
         for post in get_posts_ids(user_id):
             self.posts.append(Post(post))
 
+    
+
 """
     def __init__(self, login):
         ID = get_db_user_id_from_login(login)

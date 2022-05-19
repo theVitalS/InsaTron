@@ -1,9 +1,9 @@
-from mysql import *
+from mysql import *  # - при использовании не надо писать название модуля
 from DataBase import *
 import instaloader
 # from Bot import *
 from User import *
-import time
+import time  # - при использовании надо писать название модуля, гарантия что названия не будут перекрываться
 import random
 from instaloader import TooManyRequestsException
 # , TooManyRequestsExceptionMy
@@ -105,7 +105,7 @@ def scan_followings(bot, profile):
     return number_of_requests
 
 
-def scan_followers(bot, profile):
+def scan_followers(bot, profile, get_logins=False):
     n = 0
     number_of_requests = 0
 
@@ -151,7 +151,7 @@ def scan_posts(bot, profile, max=0, scan_info=False, scan_likes=True, scan_liker
         n += 1
         if max == 0 or (max > 0 and n < max):
             post_id = post.mediaid
-            if not if_fresh_entry('post', post_id):
+            if not if_post_id_in_table(post_id):
 
                 if scan_info:
                     insert_post_all(post_id, author, post.shortcode, 1, post.caption, post.likes, post.comments,

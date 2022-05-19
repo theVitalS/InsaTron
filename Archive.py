@@ -1,3 +1,5 @@
+import string
+
 """
 
 load = instaloader.Instaloader()
@@ -162,3 +164,16 @@ for sel in curs:
 
 
 """
+
+
+def printer_error(s):
+    sum = 0
+    for l in list(string.ascii_lowercase[14:]):
+        sum += s.count(l)
+    return str(sum)+"/"+str(len(s))
+
+s = "aaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbmmmmmmmmmmmmmmmmmmmxyz"
+
+print(printer_error(s))
+
+print(string.ascii_lowercase[14:])

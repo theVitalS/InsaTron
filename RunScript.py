@@ -11,16 +11,21 @@ from App import *
 from Bot import *
 from ComplexFunctions import *
 
+create_tables()
 
-bot = Bot()
 
-profile = instaloader.Profile.from_username(bot.context, "morning_millionaire")
+def run():
+    bot = Bot()
 
-id = profile.userid
+    #profile = instaloader.Profile.from_username(bot.context, "stoics.thoughts")
+    ids = get_followers(46638171365)
+    #ids = [3498681]
+    #multiscanner(bot, ids, n_posts=0, to_scan_posts=False)
+    scan_usernames(ids, bot)
 
-print(id)
 
-multiscanner(bot, id)
+#pause(40, 150)
+run()
 
 """for liker in ids:
     if len(get_followings(liker)) == 0 and liker not in (8100443383, 12127126705, 5669252055):
